@@ -4,18 +4,25 @@ import main_state
 
 
 class Machine_gun:
-    image = None
-    image2 = None
+    bullet_right = None
+    bullet_left = None
+    bullet_top = None
+    bullet_bot = None
 
-    def __init__(self, x=0, y=0, direction=-1, delay=0):
+    def __init__(self, x=0, y=0, direction=-1, delay=0, is_above=False):
         self.x, self.y = x, y
         self.direction = direction
         self.hit = 0
         self.delay = delay
-        if Machine_gun.image is None:
-            Machine_gun.image = load_image('machine_gun_bullet.png')
-        if Machine_gun.image2 is None:
-            Machine_gun.image2 = load_image('machine_gun_bullet2.png')
+        self.is_above = is_above
+        if Machine_gun.bullet_right is None:
+            Machine_gun.bullet_right = load_image('machine_gun_bullet_right.png')
+        if Machine_gun.bullet_left is None:
+            Machine_gun.bullet_left = load_image('machine_gun_bullet_left.png')
+        if Machine_gun.bullet_top is None:
+            Machine_gun.bullet_top = load_image('machine_gun_bullet_top.png')
+        if Machine_gun.bullet_bot is None:
+            Machine_gun.bullet_bot = load_image('machine_gun_bullet_bot.png')
 
     def update(self):
         # 이동
@@ -23,10 +30,13 @@ class Machine_gun:
             self.delay -= 1
 
         if self.delay == 0:
-            self.x += self.direction * 5
+            if not self.is_above:
+                self.x += self.direction * 5
+            else:
+                self.y += 5
 
         # 화면 밖으로 넘어감
-        if self.x < 0 or self.x > 1200:
+        if self.x < 0 or self.x > 1200 or self.y < 0 or self.y > 800:
             game_world.remove_object(self)
         # 적을 맞힘
         elif main_state.inRect(main_state.enemy.x - 10, main_state.enemy.y + 50,
@@ -36,7 +46,10 @@ class Machine_gun:
             game_world.remove_object(self)
 
     def draw(self):
-        if self.direction > 0 and self.delay == 0:
-            self.image.clip_draw(0, 0, 100, 100, self.x, self.y, 70, 35)
-        elif self.direction < 0 and self.delay == 0:
-            self.image2.clip_draw(0, 0, 100, 100, self.x, self.y, 70, 35)
+        if self.delay == 0:
+            if self.is_above:
+                self.bullet_top.clip_draw(0, 0, 100, 100, self.x, self.y, 35, 70)
+            elif self.direction > 0:
+                self.bullet_right.clip_draw(0, 0, 100, 100, self.x, self.y, 70, 35)
+            elif self.direction < 0:
+                self.bullet_left.clip_draw(0, 0, 100, 100, self.x, self.y, 70, 35)
