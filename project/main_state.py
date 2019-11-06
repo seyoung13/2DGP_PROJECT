@@ -13,6 +13,7 @@ from pistol import Pistol
 from machinegun import Machine_gun
 from grenade import Grenade
 from enemy import Enemy
+#from enemy_spawn import Spawn
 
 name = "MainState"
 
@@ -23,16 +24,18 @@ machine_gun = None
 grenade = None
 enemy = None
 font = None
+#enemy_spawn = None
 
 
 def enter():
-    global player, map1, pistol, enemy, grenade, machine_gun
+    global player, map1, pistol, enemy, grenade, machine_gun#, enemy_spawn
     map1 = Map()
     player = Player()
     pistol = Pistol()
     machine_gun = Machine_gun()
     grenade = Grenade()
     enemy = Enemy()
+    #enemy_spawn = Spawn()
 
     game_world.add_object(map1, 0)
     game_world.add_object(player, 1)
@@ -40,6 +43,7 @@ def enter():
     game_world.add_object(machine_gun, 1)
     game_world.add_object(grenade, 1)
     game_world.add_object(enemy, 1)
+    #game_world.add_object(enemy_spawn, 1)
 
 
 def exit():

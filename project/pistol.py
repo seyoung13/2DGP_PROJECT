@@ -7,7 +7,7 @@ class Pistol:
     image = None
     max_pistol = 1
 
-    def __init__(self, x=0, y=0, direction=-1, is_above=False):
+    def __init__(self, x=0, y=0, direction=-1, is_above=0):
         self.x, self.y = x, y
         self.direction = direction
         self.hit = 0
@@ -17,10 +17,12 @@ class Pistol:
 
     def update(self):
         # 이동
-        if not self.is_above:
+        if self.is_above == 0:
             self.x += self.direction * 5
-        else:
+        elif self.is_above == 1:
             self.y += 5
+        else:
+            self.y -= 5
 
         # 화면 밖으로 넘어감
         if self.x < 0 or self.x > 1200 or self.y < 0 or self.y > 800:

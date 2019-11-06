@@ -7,7 +7,7 @@ class Enemy:
     image = None
     image_hit = None
 
-    def __init__(self):
+    def __init__(self, x=800, y=200):
         self.x, self.y = random.randint(100, 1100), random.randint(70, 180)
         self.hp = 5
         self.hit = 0

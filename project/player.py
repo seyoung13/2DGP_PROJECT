@@ -58,6 +58,10 @@ class IdleState:
             player.weapon = PISTOL
         if event == E_KEY_DOWN:
             player.weapon = MACHINE_GUN
+        if event == DOWN_KEY_DOWN and player.jumping == 1:
+            player.is_above = 2
+        if event == DOWN_KEY_UP or player.jumping == 0:
+            player.is_above = 0
 
     @staticmethod
     def do(player):
@@ -73,7 +77,6 @@ class IdleState:
             player.fy = 2
 
         player.sit_y = 0
-        player.is_above = False
 
     @staticmethod
     def draw(player):
@@ -109,6 +112,10 @@ class RunState:
             player.weapon = PISTOL
         if event == E_KEY_DOWN:
             player.weapon = MACHINE_GUN
+        if event == DOWN_KEY_DOWN and player.jumping == 1:
+            player.is_above = 2
+        if event == DOWN_KEY_UP or player.jumping == 0:
+            player.is_above = 0
 
     @staticmethod
     def do(player):
@@ -125,7 +132,6 @@ class RunState:
             player.jump_count = 0
 
         player.sit_y = 0
-        player.is_above = False
 
     @staticmethod
     def draw(player):
@@ -176,7 +182,6 @@ class SitState:
             player.fy = 2
 
         player.sit_y = -30
-        player.is_above = False
 
     @staticmethod
     def draw(player):
@@ -228,7 +233,6 @@ class CrawlState:
             player.jump_count = 0
 
         player.sit_y = -30
-        player.is_above = False
 
     @staticmethod
     def draw(player):
@@ -281,7 +285,7 @@ class LookAboveState:
             player.fy = 2
 
         player.sit_y = 0
-        player.is_above = True
+        player.is_above = 1
 
     @staticmethod
     def draw(player):
@@ -333,7 +337,6 @@ class LookAboveRunState:
             player.jump_count = 0
 
         player.sit_y = 0
-        player.is_above = True
 
     @staticmethod
     def draw(player):
@@ -400,7 +403,7 @@ class Player:
         self.jumping, self.jump_y, self.jump_count, self.sit_y = 0, 0, 0, 0
         self.weapon = PISTOL
         self.shoot_delay = 0
-        self.is_above = False
+        self.is_above = 0
 
         self.event_que = []
         self.cur_state = IdleState

@@ -9,7 +9,7 @@ class Machine_gun:
     bullet_top = None
     bullet_bot = None
 
-    def __init__(self, x=0, y=0, direction=-1, delay=0, is_above=False):
+    def __init__(self, x=0, y=0, direction=-1, delay=0, is_above=0):
         self.x, self.y = x, y
         self.direction = direction
         self.hit = 0
@@ -30,10 +30,12 @@ class Machine_gun:
             self.delay -= 1
 
         if self.delay == 0:
-            if not self.is_above:
+            if self.is_above == 0:
                 self.x += self.direction * 5
-            else:
+            elif self.is_above == 1:
                 self.y += 5
+            else:
+                self.y -= 5
 
         # 화면 밖으로 넘어감
         if self.x < 0 or self.x > 1200 or self.y < 0 or self.y > 800:
@@ -47,8 +49,10 @@ class Machine_gun:
 
     def draw(self):
         if self.delay == 0:
-            if self.is_above:
+            if self.is_above == 1:
                 self.bullet_top.clip_draw(0, 0, 100, 100, self.x, self.y, 35, 70)
+            elif self.is_above == 2:
+                self.bullet_bot.clip_draw(0, 0, 100, 100, self.x, self.y, 35, 70)
             elif self.direction > 0:
                 self.bullet_right.clip_draw(0, 0, 100, 100, self.x, self.y, 70, 35)
             elif self.direction < 0:
