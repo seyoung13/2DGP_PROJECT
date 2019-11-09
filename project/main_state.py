@@ -7,13 +7,13 @@ from pico2d import *
 import game_framework
 import game_world
 
-from map import Map
-from player import Player
-from pistol import Pistol
-from machinegun import Machine_gun
-from grenade import Grenade
-from enemy import Enemy
-#from enemy_spawn import Spawn
+from file_map import Map
+from file_player import Player
+from file_handgun import Handgun
+from file_heavymachinegun import HeavyMachineGun
+from file_grenade import Grenade
+from file_infantry import Infantry
+from file_spawn import Spawn
 
 name = "MainState"
 
@@ -22,28 +22,28 @@ player = None
 pistol = None
 machine_gun = None
 grenade = None
-enemy = None
+infantry = None
 font = None
-#enemy_spawn = None
+spawn = None
 
 
 def enter():
-    global player, map1, pistol, enemy, grenade, machine_gun#, enemy_spawn
+    global player, map1, pistol, infantry, grenade, machine_gun, spawn
     map1 = Map()
     player = Player()
-    pistol = Pistol()
-    machine_gun = Machine_gun()
+    pistol = Handgun()
+    machine_gun = HeavyMachineGun()
     grenade = Grenade()
-    enemy = Enemy()
-    #enemy_spawn = Spawn()
+    infantry = Infantry()
+    spawn = Spawn()
 
     game_world.add_object(map1, 0)
     game_world.add_object(player, 1)
     game_world.add_object(pistol, 1)
     game_world.add_object(machine_gun, 1)
     game_world.add_object(grenade, 1)
-    game_world.add_object(enemy, 1)
-    #game_world.add_object(enemy_spawn, 1)
+    game_world.add_object(infantry, 1)
+    game_world.add_object(spawn, 0)
 
 
 def exit():
@@ -81,7 +81,7 @@ def draw():
     update_canvas()
 
 
-def inRect(left, top, right, bottom, x, y):
+def InRect(left, top, right, bottom, x, y):
     if left < x < right and bottom < y < top:
         return True
     else:

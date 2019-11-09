@@ -75,9 +75,9 @@ class Pistol:
             self.x += self.direction * 5
             self.remain -= 0.5
         # 판정
-        if enemy.hp > 0 and self.remain > 0 and \
-                enemy.x - 10 < self.x < enemy.x + 10 and enemy.y - 50 < self.y < enemy.y + 50:
-            enemy.hp -= 1
+        if infantry.hp > 0 and self.remain > 0 and \
+                infantry.x - 10 < self.x < infantry.x + 10 and infantry.y - 50 < self.y < infantry.y + 50:
+            infantry.hp -= 1
             self.remain = 0
 
     def draw(self):
@@ -177,7 +177,7 @@ background = Background()
 player = Player()
 pistol_max = 4
 pistol = [Pistol() for i in range(pistol_max)]
-enemy = Enemy()
+infantry = Enemy()
 
 while running:
     clear_canvas()
@@ -187,15 +187,15 @@ while running:
     for i in range(2):
         grass[i].draw()
     player.draw()
-    if enemy.hp > 0:
-        enemy.draw()
+    if infantry.hp > 0:
+        infantry.draw()
 
     for i in range(pistol_max):
         if pistol[i].remain != 0:
             pistol[i].draw()
 
     player.update()
-    enemy.update()
+    infantry.update()
 
     for i in range(pistol_max):
         pistol[i].update()
