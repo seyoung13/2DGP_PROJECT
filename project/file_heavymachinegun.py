@@ -49,10 +49,10 @@ class HeavyMachineGun:
     def draw(self):
         if self.delay == 0:
             if self.is_above == 1:
-                self.bullet.clip_composite_draw(0, 0, 100, 100, -math.pi / 2, 'h', self.x, self.y, 70, 35)
+                self.bullet.clip_composite_draw(0, 0, 100, 100, -math.pi / 2, 'h', self.x, self.y, 90, 45)
             elif self.is_above == 2:
-                self.bullet.clip_composite_draw(0, 0, 100, 100, math.pi / 2, 'h', self.x, self.y, 70, 35)
+                self.bullet.clip_composite_draw(0, 0, 100, 100, math.pi / 2, 'h', self.x, self.y, 90, 45)
             elif self.direction > 0:
-                self.bullet.clip_composite_draw(0, 0, 100, 100, math.pi, 'h', self.x, self.y, 70, 35)
+                self.bullet.clip_composite_draw(0, 0, 100, 100, math.pi, 'h', self.x, self.y, 90, 45)
             elif self.direction < 0:
-                self.bullet.clip_composite_draw(0, 0, 100, 100, 0, 'h', self.x, self.y, 70, 35)
+                self.bullet.clip_composite_draw(0, 0, 100, 100, 0, 'h', self.x, self.y, 90, 45)

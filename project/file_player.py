@@ -2,12 +2,13 @@ from pico2d import *
 import game_world
 import main_state
 import game_framework
+import random
+
 
 from file_handgun import Handgun
 from file_heavymachinegun import HeavyMachineGun
 from laser import Laser
 from file_grenade import Grenade
-import random
 
 
 # Boy Event
