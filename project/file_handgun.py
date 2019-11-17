@@ -5,7 +5,7 @@ import game_framework
 import os
 
 PIXEL_PER_METER = (10.0 / 0.3)
-MUZZLE_VELOCITY_KMPH = 200.0  # Km / Hour
+MUZZLE_VELOCITY_KMPH = 150.0  # Km / Hour
 MUZZLE_VELOCITY_MPM = (MUZZLE_VELOCITY_KMPH * 1000.0 / 60.0)
 MUZZLE_VELOCITY_MPS = (MUZZLE_VELOCITY_MPM / 60.0)
 MUZZLE_VELOCITY_PPS = (MUZZLE_VELOCITY_MPS * PIXEL_PER_METER)
@@ -20,6 +20,7 @@ class Handgun:
         self.direction = direction
         self.hit = 0
         self.is_above = is_above
+        self.size = 20
         if Handgun.image is None:
             Handgun.image = load_image('pistol_bullet.png')
 
@@ -36,13 +37,14 @@ class Handgun:
         if self.x < 0 or self.x > 1200 or self.y < 0 or self.y > 800:
             Handgun.max_pistol -= 1
             game_world.remove_object(self)
-        # 적을 맞힘
-        elif main_state.InRect(main_state.infantry.x - 10, main_state.infantry.y + 50,
-                               main_state.infantry.x + 10, main_state.infantry.y - 50, self.x, self.y):
-            Handgun.max_pistol -= 1
-            main_state.infantry.hp -= 1
-            main_state.infantry.hit = 1
-            game_world.remove_object(self)
 
     def draw(self):
-        self.image.clip_draw(0, 0, 60, 60, self.x, self.y, 20, 20)
+        self.image.clip_draw(0, 0, 60, 60, self.x, self.y, self.size, self.size)
+
+    def get_bb(self):
+        return self.x - self.size / 2, self.y + self.size / 2, \
+               self.x + self.size / 2, self.y - self.size / 2
+
+    def hit_target(self):
+        Handgun.max_pistol -= 1
+        game_world.remove_object(self)

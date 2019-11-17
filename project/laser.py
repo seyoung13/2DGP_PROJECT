@@ -27,7 +27,7 @@ class Laser:
         # 적을 맞힘
         if main_state.infantry.y - 50 < self.y < main_state.infantry.y + 50:
             main_state.infantry.hp -= 1
-            main_state.infantry.hit = 1
+            main_state.infantry.hit_target = 1
 
     def draw(self):
         self.image.clip_draw(self.x+(self.direction*300), self.frame_y*60, 60, 60, self.x, self.y, 1200, 20)

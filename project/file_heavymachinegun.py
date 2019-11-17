@@ -16,10 +16,12 @@ class HeavyMachineGun:
 
     def __init__(self, x=0, y=0, direction=-1, delay=0, is_above=0):
         self.x, self.y = x, y
+        self.w, self.h = 100, 45
         self.direction = direction
         self.hit = 0
         self.delay = delay
         self.is_above = is_above
+
         if HeavyMachineGun.bullet is None:
             HeavyMachineGun.bullet = load_image('machine_gun_bullet.png')
 
@@ -40,19 +42,21 @@ class HeavyMachineGun:
         if self.x < 0 or self.x > 1200 or self.y < 0 or self.y > 800:
             game_world.remove_object(self)
         # 적을 맞힘
-        elif main_state.InRect(main_state.infantry.x - 10, main_state.infantry.y + 50,
-                               main_state.infantry.x + 10, main_state.infantry.y - 50, self.x, self.y):
-            main_state.infantry.hp -= 1
-            main_state.infantry.hit = 1
-            game_world.remove_object(self)
 
     def draw(self):
         if self.delay == 0:
             if self.is_above == 1:
-                self.bullet.clip_composite_draw(0, 0, 100, 100, -math.pi / 2, 'h', self.x, self.y, 90, 45)
+                self.bullet.clip_composite_draw(0, 0, 100, 100, -math.pi / 2, 'h', self.x, self.y, self.w, self.h)
             elif self.is_above == 2:
-                self.bullet.clip_composite_draw(0, 0, 100, 100, math.pi / 2, 'h', self.x, self.y, 90, 45)
+                self.bullet.clip_composite_draw(0, 0, 100, 100, math.pi / 2, 'h', self.x, self.y, self.w, self.h)
             elif self.direction > 0:
-                self.bullet.clip_composite_draw(0, 0, 100, 100, math.pi, 'h', self.x, self.y, 90, 45)
+                self.bullet.clip_composite_draw(0, 0, 100, 100, math.pi, 'h', self.x, self.y, self.w, self.h)
             elif self.direction < 0:
-                self.bullet.clip_composite_draw(0, 0, 100, 100, 0, 'h', self.x, self.y, 90, 45)
+                self.bullet.clip_composite_draw(0, 0, 100, 100, 0, 'h', self.x, self.y, self.w, self.h)
+
+    def get_bb(self):
+        return self.x - self.w / 2, self.y + self.w / 2, \
+               self.x + self.h / 2, self.y - self.h / 2
+
+    def hit_target(self):
+        game_world.remove_object(self)

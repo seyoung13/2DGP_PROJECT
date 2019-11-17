@@ -151,7 +151,7 @@ def handle_events():
                 player.face_direction = -1
             # 공격
             elif event.key == SDLK_a:
-                BulletLimit(pistol, pistol_max, 200)
+                BulletLimit(handgun, pistol_max, 200)
             # 점프
             elif event.key == SDLK_s and player.jumping == 0:
                 player.jumping = 1
@@ -176,7 +176,7 @@ background = Background()
 
 player = Player()
 pistol_max = 4
-pistol = [Pistol() for i in range(pistol_max)]
+handgun = [Pistol() for i in range(pistol_max)]
 infantry = Enemy()
 
 while running:
@@ -191,14 +191,14 @@ while running:
         infantry.draw()
 
     for i in range(pistol_max):
-        if pistol[i].remain != 0:
-            pistol[i].draw()
+        if handgun[i].remain != 0:
+            handgun[i].draw()
 
     player.update()
     infantry.update()
 
     for i in range(pistol_max):
-        pistol[i].update()
+        handgun[i].update()
 
     update_canvas()
 

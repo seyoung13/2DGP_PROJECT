@@ -24,6 +24,11 @@ RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
+JUMP_SPEED_KMPH = 40.0  # Km / Hour
+JUMP_SPEED_MPM = (JUMP_SPEED_KMPH * 1000.0 / 60.0)
+JUMP_SPEED_MPS = (JUMP_SPEED_MPM / 60.0)
+JUMP_SPEED_PPS = (JUMP_SPEED_MPS * PIXEL_PER_METER)
+
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
@@ -74,6 +79,7 @@ class IdleState:
             player.shoot()
         if event == S_KEY_DOWN and player.jumping == 0:
             player.jumping = 1
+            player.descending = 0
         if event == D_KEY_DOWN:
             player.throw()
         if event == Q_KEY_DOWN:
@@ -87,25 +93,15 @@ class IdleState:
 
     @staticmethod
     def do(player):
-        player.jump_y = -(player.jump_count ** 2) + (20 * player.jump_count)
-        if player.jumping == 1 and player.jump_count < 20:
-            player.jump_count += 0.1
-            player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
-            player.fy = 0
-
-        if player.jump_count > 20:
-            player.jumping = 0
-            player.jump_count = 0
-            player.fy = 2
-
+        player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         player.sit_y = 0
 
     @staticmethod
     def draw(player):
         if player.direction > 0:
-            player.image.clip_draw(0, 100 * (player.fy + 1), 100, 100, player.x, player.y + player.jump_y)
+            player.image.clip_draw(0, 300, 100, 100, player.x, player.y)
         elif player.direction < 0:
-            player.image.clip_draw(0, 100 * player.fy, 100, 100, player.x, player.y + player.jump_y)
+            player.image.clip_draw(0, 200, 100, 100, player.x, player.y)
 
 
 class RunState:
@@ -134,6 +130,7 @@ class RunState:
             player.shoot()
         if event == S_KEY_DOWN and player.jumping == 0:
             player.jumping = 1
+            player.descending = 0
         if event == D_KEY_DOWN:
             player.throw()
         if event == Q_KEY_DOWN:
@@ -153,22 +150,14 @@ class RunState:
         player.x += player.velocity * game_framework.frame_time
         player.x = clamp(25, player.x, 1200 - 25)
 
-        player.jump_y = -(player.jump_count ** 2) + (20 * player.jump_count)
-        if player.jumping == 1 and player.jump_count < 20:
-            player.jump_count += 0.1
-
-        if player.jump_count > 20:
-            player.jumping = 0
-            player.jump_count = 0
-
         player.sit_y = 0
 
     @staticmethod
     def draw(player):
         if player.direction > 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 100, player.x, player.y + player.jump_y)
+            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 100, player.x, player.y)
         elif player.direction < 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 100, player.x, player.y + player.jump_y)
+            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 100, player.x, player.y)
 
 
 class SitState:
@@ -193,6 +182,7 @@ class SitState:
             player.shoot()
         if event == S_KEY_DOWN and player.jumping == 0:
             player.jumping = 1
+            player.descending = 0
         if event == D_KEY_DOWN:
             player.throw()
         if event == Q_KEY_DOWN:
@@ -204,17 +194,6 @@ class SitState:
 
     @staticmethod
     def do(player):
-        player.jump_y = -(player.jump_count ** 2) + (20 * player.jump_count)
-        if player.jumping == 1 and player.jump_count < 20:
-            player.jump_count += 0.1
-            player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
-            player.fy = 0
-
-        if player.jump_count > 20:
-            player.jumping = 0
-            player.jump_count = 0
-            player.fy = 2
-
         if player.jumping == 0:
             player.sit_y = -30
             player.look_above = 0
@@ -224,12 +203,11 @@ class SitState:
     @staticmethod
     def draw(player):
         if player.jumping == 1:
-            player.image.clip_draw(0, 100 * 1, 50, 100, player.x, player.y + player.jump_y +
-                                   player.sit_y)
+            player.image.clip_draw(0, 100 * 1, 50, 100, player.x, player.y + player.sit_y)
         elif player.direction > 0:
-            player.image.clip_draw(0, 100 * (player.fy + 1), 100, 50, player.x, player.y + player.jump_y + player.sit_y)
+            player.image.clip_draw(0, 100, 100, 50, player.x, player.y + player.sit_y)
         elif player.direction < 0:
-            player.image.clip_draw(0, 100 * player.fy, 100, 50, player.x, player.y + player.jump_y + player.sit_y)
+            player.image.clip_draw(0, 100, 100, 50, player.x, player.y + player.sit_y)
 
 
 class CrawlState:
@@ -252,6 +230,7 @@ class CrawlState:
             player.shoot()
         if event == S_KEY_DOWN and player.jumping == 0:
             player.jumping = 1
+            player.descending = 0
         if event == D_KEY_DOWN:
             player.throw()
         if event == Q_KEY_DOWN:
@@ -266,15 +245,6 @@ class CrawlState:
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
 
         player.x = clamp(25, player.x, 1200 - 25)
-
-        player.jump_y = -(player.jump_count ** 2) + (20 * player.jump_count)
-        if player.jumping == 1 and player.jump_count < 20:
-            player.jump_count += 0.1
-
-        if player.jump_count > 20:
-            player.jumping = 0
-            player.jump_count = 0
-
         if player.jumping == 0:
             player.sit_y = -30
             player.x += 0.5 * player.velocity * game_framework.frame_time
@@ -286,13 +256,13 @@ class CrawlState:
     @staticmethod
     def draw(player):
         if player.jumping == 1:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 50, 100, player.x, player.y + player.jump_y +
+            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 50, 100, player.x, player.y +
                                    player.sit_y)
         elif player.direction > 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 50, player.x, player.y + player.jump_y +
+            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 50, player.x, player.y +
                                    player.sit_y)
         elif player.direction < 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 50, player.x, player.y + player.jump_y +
+            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 50, player.x, player.y +
                                    player.sit_y)
 
 
@@ -328,15 +298,18 @@ next_state_table = {
 
 
 class Player:
+    descending = 0
 
     def __init__(self):
         self.x, self.y = 200, 90
+        self.w, self.h = 20, 100
         self.image = load_image('animation_sheet.png')
         self.frame = 0
         self.fy = 2
         self.direction = 1
         self.velocity = 0
         self.jumping, self.jump_y, self.jump_count, self.sit_y = 0, 0, 0, 0
+        self.before_jump_y = 0
         self.weapon = PISTOL
         self.shoot_delay = 0
         self.look_above = 0
@@ -364,8 +337,23 @@ class Player:
             self.cur_state.enter(self, event)
         self.shoot_delay -= 1
 
+        if self.jumping == 0:
+            self.before_jump_y = self.y
+
+        if self.y - self.before_jump_y >= 200:
+            Player.descending = 1
+
+        if self.jumping == 1 and Player.descending == 0:
+            self.y += JUMP_SPEED_PPS * game_framework.frame_time
+        if self.jumping == 1 and Player.descending == 1:
+            self.y -= JUMP_SPEED_PPS * game_framework.frame_time
+
     def draw(self):
         self.cur_state.draw(self)
+
+    def get_bb(self):
+        return self.x - self.w / 2, self.y + self.w / 2, \
+               self.x + self.h / 2, self.y - self.h / 2
 
     def shoot(self):
         if self.weapon == PISTOL:
@@ -394,7 +382,13 @@ class Player:
             game_world.add_object(grenade, 1)
             Grenade.max_grenade += 1
 
+    def landing(self):
+        Player.descending = 0
+        self.jumping = 0
+
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
+
+

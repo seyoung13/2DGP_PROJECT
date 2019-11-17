@@ -5,33 +5,27 @@ from background import Background
 
 
 class Map:
-    ground1 = 0
-    ground2 = 0
-    background1 = 0
+    background = 0
+    ground = 0
 
-    def __init__(self):
-        self.bw, self.bh = 1200, 800
-        self.g1x, self.g1y = 400, 30
-        self.g1w, self.g1h = 800, 60
-        self.g2x, self.g2y = 1000, 60
-        self.g2w, self.g2h = 400, 60
+    def __init__(self, x, y, w, h):
+        self.x, self.y = x, y
+        self.w, self.h = w, h
 
     def update(self):
         pass
 
     def draw(self):
-        if Map.background1 == 0:
-            background1 = Background(self.bw, self.bh)
-            game_world.add_object(background1, 0)
-            Map.background1 = 1
+        if Map.background == 0:
+            background = Background(1200, 800)
+            game_world.add_object(background, 0)
+            Map.background = 1
 
-        if Map.ground1 == 0:
-            ground1 = Ground(self.g1x, self.g1y, self.g1w, self.g1h)
-            game_world.add_object(ground1, 0)
-            Map.ground1 = 1
+        if Map.ground == 0:
+            ground = Ground(self.x, self.y, self.w, self.h)
+            game_world.add_object(ground, 0)
+            Map.ground = 1
 
-        if Map.ground2 == 0:
-            ground2 = Ground(self.g2x, self.g2y, self.g2w, self.g2h)
-            game_world.add_object(ground2, 0)
-            Map.ground2 = 1
-
+    def get_bb(self):
+        return self.x - self.w/2, self.y,\
+               self.x + self.w/2, self.y - self.h/2

@@ -17,10 +17,10 @@ from file_spawn import Spawn
 
 name = "MainState"
 
-map1 = None
+foothold1, foothold2 = None, None
 player = None
-pistol = None
-machine_gun = None
+handgun = None
+heavy_machine_gun = None
 grenade = None
 infantry = None
 font = None
@@ -28,19 +28,21 @@ spawn = None
 
 
 def enter():
-    global player, map1, pistol, infantry, grenade, machine_gun, spawn
-    map1 = Map()
+    global player, foothold1, foothold2, handgun, infantry, grenade, heavy_machine_gun, spawn
+    foothold1 = Map(300, 30, 600, 60)
+    foothold2 = Map(900, 90, 600, 120)
     player = Player()
-    pistol = Handgun()
-    machine_gun = HeavyMachineGun()
+    handgun = Handgun()
+    heavy_machine_gun = HeavyMachineGun()
     grenade = Grenade()
     infantry = Infantry()
     spawn = Spawn()
 
-    game_world.add_object(map1, 0)
+    game_world.add_object(foothold1, 0)
+    game_world.add_object(foothold2, 0)
     game_world.add_object(player, 1)
-    game_world.add_object(pistol, 1)
-    game_world.add_object(machine_gun, 1)
+    game_world.add_object(handgun, 1)
+    game_world.add_object(heavy_machine_gun, 1)
     game_world.add_object(grenade, 1)
     game_world.add_object(infantry, 1)
     game_world.add_object(spawn, 0)
@@ -72,6 +74,19 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
+    if collide(handgun, infantry):
+        infantry.damaged(1)
+        handgun.hit_target()
+    if collide(heavy_machine_gun, infantry):
+        infantry.damaged(1)
+        heavy_machine_gun.hit_target()
+    if collide(grenade, infantry):
+        infantry.damaged(5)
+        grenade.hit_target()
+    if collide(player, foothold1) and Player.descending == 1:
+        player.landing()
+    if collide(player, foothold2) and Player.descending == 1:
+        player.landing()
 
 
 def draw():
@@ -81,8 +96,13 @@ def draw():
     update_canvas()
 
 
-def InRect(left, top, right, bottom, x, y):
-    if left < x < right and bottom < y < top:
-        return True
-    else:
-        return False
+def collide(a, b):
+    left_a, top_a, right_a, bot_a = a.get_bb()
+    left_b, top_b, right_b, bot_b = b.get_bb()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bot_b: return False
+    if bot_a > top_b: return False
+
+    return True
