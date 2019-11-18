@@ -3,11 +3,11 @@ import game_world
 import main_state
 import game_framework
 import random
-
+from math import *
 
 from file_handgun import Handgun
 from file_heavymachinegun import HeavyMachineGun
-from laser import Laser
+from file_laser import Laser
 from file_grenade import Grenade
 
 
@@ -15,6 +15,8 @@ from file_grenade import Grenade
 # enum 이랑 비슷 0, 1, 2, 3
 RIGHT_KEY_DOWN, LEFT_KEY_DOWN, RIGHT_KEY_UP, LEFT_KEY_UP, UP_KEY_DOWN, UP_KEY_UP, DOWN_KEY_DOWN, DOWN_KEY_UP, \
     A_KEY_DOWN, S_KEY_DOWN, D_KEY_DOWN, Q_KEY_DOWN, E_KEY_DOWN, W_KEY_DOWN = range(14)
+
+FRONT_SIDE, TOP_SIDE, BOTTOM_SIDE = range(3)
 
 PISTOL, MACHINE_GUN, LASER = range(3)
 
@@ -67,11 +69,11 @@ class IdleState:
         elif event == LEFT_KEY_UP:
             player.velocity += RUN_SPEED_PPS
         elif event == UP_KEY_DOWN:
-            player.look_above = 1
+            player.look_at = TOP_SIDE
         elif event == UP_KEY_UP:
-            player.look_above = 0
+            player.look_at = FRONT_SIDE
         elif event == DOWN_KEY_UP:
-            player.look_above = 0
+            player.look_at = FRONT_SIDE
 
     @staticmethod
     def exit(player, event):
@@ -89,7 +91,7 @@ class IdleState:
         if event == W_KEY_DOWN:
             player.weapon = LASER
         if event == DOWN_KEY_DOWN and player.jumping == 1:
-            player.look_above = 2
+            player.look_at = BOTTOM_SIDE
 
     @staticmethod
     def do(player):
@@ -118,11 +120,11 @@ class RunState:
         elif event == LEFT_KEY_UP:
             player.velocity += RUN_SPEED_PPS
         elif event == UP_KEY_DOWN:
-            player.look_above = 1
+            player.look_at = TOP_SIDE
         elif event == UP_KEY_UP:
-            player.look_above = 0
+            player.look_at = FRONT_SIDE
         elif event == DOWN_KEY_UP:
-            player.look_above = 0
+            player.look_at = FRONT_SIDE
 
     @staticmethod
     def exit(player, event):
@@ -140,9 +142,7 @@ class RunState:
         if event == W_KEY_DOWN:
             player.weapon = LASER
         if event == DOWN_KEY_DOWN and player.jumping == 1:
-            player.look_above = 2
-        if event == player.jumping == 0:
-            player.look_above = 0
+            player.look_at = BOTTOM_SIDE
 
     @staticmethod
     def do(player):
@@ -174,7 +174,7 @@ class SitState:
         elif event == LEFT_KEY_UP:
             player.velocity += RUN_SPEED_PPS
         elif event == DOWN_KEY_UP:
-            player.look_above = 0
+            player.look_at = FRONT_SIDE
 
     @staticmethod
     def exit(player, event):
@@ -196,7 +196,7 @@ class SitState:
     def do(player):
         if player.jumping == 0:
             player.sit_y = -30
-            player.look_above = 0
+            player.muzzle_angle = 0.0
         else:
             player.sit_y = 0
 
@@ -248,7 +248,7 @@ class CrawlState:
         if player.jumping == 0:
             player.sit_y = -30
             player.x += 0.5 * player.velocity * game_framework.frame_time
-            player.look_above = 0
+            player.look_at = FRONT_SIDE
         else:
             player.sit_y = 0
             player.x += player.velocity * game_framework.frame_time
@@ -305,14 +305,13 @@ class Player:
         self.w, self.h = 20, 100
         self.image = load_image('animation_sheet.png')
         self.frame = 0
-        self.fy = 2
         self.direction = 1
         self.velocity = 0
-        self.jumping, self.jump_y, self.jump_count, self.sit_y = 0, 0, 0, 0
-        self.before_jump_y = 0
+        self.jumping, self.jump_y,  self.before_jump_y, self.sit_y = 0, 0, 0, 0
         self.weapon = PISTOL
         self.shoot_delay = 0
-        self.look_above = 0
+        self.look_at = FRONT_SIDE
+        self.muzzle_angle = 0.0
 
         self.event_que = []
         self.cur_state = IdleState
@@ -339,14 +338,26 @@ class Player:
 
         if self.jumping == 0:
             self.before_jump_y = self.y
-
         if self.y - self.before_jump_y >= 200:
             Player.descending = 1
-
         if self.jumping == 1 and Player.descending == 0:
             self.y += JUMP_SPEED_PPS * game_framework.frame_time
         if self.jumping == 1 and Player.descending == 1:
             self.y -= JUMP_SPEED_PPS * game_framework.frame_time
+
+        if self.look_at == TOP_SIDE:
+            if self.muzzle_angle < pi/2:
+                self.muzzle_angle += pi/32
+        if self.look_at == BOTTOM_SIDE:
+            if self.muzzle_angle >= -pi/2:
+                self.muzzle_angle -= pi/32
+        if self.look_at == FRONT_SIDE:
+            if self.muzzle_angle == 0:
+                self.muzzle_angle = 0
+            elif self.muzzle_angle > 0:
+                self.muzzle_angle -= pi/32
+            elif self.muzzle_angle < 0:
+                self.muzzle_angle += pi/32
 
     def draw(self):
         self.cur_state.draw(self)
@@ -358,22 +369,21 @@ class Player:
     def shoot(self):
         if self.weapon == PISTOL:
             if Handgun.max_pistol < 4:
-                bullet = Handgun(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction,
-                                 self.look_above)
+                bullet = Handgun(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction, self.muzzle_angle)
                 game_world.add_object(bullet, 1)
                 Handgun.max_pistol += 1
         elif self.weapon == MACHINE_GUN and self.shoot_delay < 0:
-            if not self.look_above:
+            if not self.muzzle_angle:
                 bullet = [HeavyMachineGun(self.x, self.y + self.jump_y + random.randint(-10, 10) + 10 +
-                                          self.sit_y, self.direction, i * 20, self.look_above) for i in range(4)]
+                                          self.sit_y, self.direction, i * 15, self.muzzle_angle) for i in range(4)]
             else:
                 bullet = [HeavyMachineGun(self.x + random.randint(-10, 10), self.y + self.jump_y + 50 +
-                                          self.sit_y, self.direction, i * 20, self.look_above) for i in range(4)]
+                                          self.sit_y, self.direction, i * 15, self.muzzle_angle) for i in range(4)]
             for i in range(4):
                 game_world.add_object(bullet[i], 1)
-            self.shoot_delay = 55
+            self.shoot_delay = 45
         elif self.weapon == LASER:
-            bullet = Laser(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction, self.look_above)
+            bullet = Laser(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction, self.muzzle_angle)
             game_world.add_object(bullet, 1)
 
     def throw(self):
@@ -385,6 +395,10 @@ class Player:
     def landing(self):
         Player.descending = 0
         self.jumping = 0
+
+    def floating(self):
+        Player.descending = 1
+        self.jumping = 1
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

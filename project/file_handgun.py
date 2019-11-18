@@ -3,6 +3,7 @@ import game_world
 import main_state
 import game_framework
 import os
+from math import *
 
 PIXEL_PER_METER = (10.0 / 0.3)
 MUZZLE_VELOCITY_KMPH = 150.0  # Km / Hour
@@ -15,23 +16,21 @@ class Handgun:
     image = None
     max_pistol = 1
 
-    def __init__(self, x=0, y=0, direction=-1, is_above=0):
+    def __init__(self, x=0, y=0, direction=-1, muzzle_angle=0.0):
         self.x, self.y = x, y
         self.direction = direction
         self.hit = 0
-        self.is_above = is_above
+        self.muzzle_angle = muzzle_angle
         self.size = 20
         if Handgun.image is None:
             Handgun.image = load_image('pistol_bullet.png')
 
     def update(self):
         # 이동
-        if self.is_above == 0:
+        if -pi/4 < self.muzzle_angle < pi/4:
             self.x += self.direction * MUZZLE_VELOCITY_PPS * game_framework.frame_time
-        elif self.is_above == 1:
-            self.y += MUZZLE_VELOCITY_PPS * game_framework.frame_time
-        else:
-            self.y -= MUZZLE_VELOCITY_PPS * game_framework.frame_time
+        elif self.muzzle_angle == pi/2 or -pi/2:
+            self.y += MUZZLE_VELOCITY_PPS * game_framework.frame_time * sin(self.muzzle_angle)
 
         # 화면 밖으로 넘어감
         if self.x < 0 or self.x > 1200 or self.y < 0 or self.y > 800:

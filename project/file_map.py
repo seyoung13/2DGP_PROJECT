@@ -1,16 +1,17 @@
 from pico2d import *
 import game_world
-from ground import Ground
-from background import Background
+from file_ground import Ground
+from file_background import Background
 
 
 class Map:
     background = 0
-    ground = 0
 
     def __init__(self, x, y, w, h):
         self.x, self.y = x, y
         self.w, self.h = w, h
+        self.ground = 0
+        self.background = 0
 
     def update(self):
         pass
@@ -21,10 +22,10 @@ class Map:
             game_world.add_object(background, 0)
             Map.background = 1
 
-        if Map.ground == 0:
+        if self.ground == 0:
             ground = Ground(self.x, self.y, self.w, self.h)
             game_world.add_object(ground, 0)
-            Map.ground = 1
+            self.ground = 1
 
     def get_bb(self):
         return self.x - self.w/2, self.y,\

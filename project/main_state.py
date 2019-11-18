@@ -30,7 +30,7 @@ spawn = None
 def enter():
     global player, foothold1, foothold2, handgun, infantry, grenade, heavy_machine_gun, spawn
     foothold1 = Map(300, 30, 600, 60)
-    foothold2 = Map(900, 90, 600, 120)
+    foothold2 = Map(900, 90, 600, 60)
     player = Player()
     handgun = Handgun()
     heavy_machine_gun = HeavyMachineGun()
@@ -85,7 +85,7 @@ def update():
         grenade.hit_target()
     if collide(player, foothold1) and Player.descending == 1:
         player.landing()
-    if collide(player, foothold2) and Player.descending == 1:
+    elif collide(player, foothold2) and Player.descending == 1:
         player.landing()
 
 
