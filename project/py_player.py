@@ -297,16 +297,16 @@ next_state_table = {
 
 
 class Player:
-    descending = False
+    descending = True
 
     def __init__(self):
         self.x, self.y = 200, 500
-        self.w, self.h = 20, 100
+        self.w, self.h = 30, 100
         self.image = load_image('animation_sheet.png')
         self.frame = 0
         self.direction = 1
         self.velocity = 0
-        self.jumping, self.jump_y, self.before_jump_y, self.sit_y = False, 0, 0, 0
+        self.jumping, self.jump_y, self.before_jump_y, self.sit_y = True, 0, 0, 0
         self.weapon = PISTOL
         self.shoot_delay = 0
         self.look_at = FRONT_SIDE
@@ -338,7 +338,7 @@ class Player:
         if not self.jumping:
             self.before_jump_y = self.y
         if self.y - self.before_jump_y >= 200:
-            Player.descending = 1
+            Player.descending = True
         if self.jumping and not Player.descending:
             self.y += JUMP_SPEED_PPS * game_framework.frame_time
         if self.jumping and Player.descending:
@@ -365,8 +365,8 @@ class Player:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.w / 2, self.y + self.h / 2 + self.sit_y, \
-               self.x + self.w / 2, self.y - self.h / 2
+        return self.x - self.w / 2, self.y - self.h / 2, \
+               self.x + self.w / 2, self.y + self.h / 2 + self.sit_y * 1.5
 
     def shoot(self):
         if self.weapon == PISTOL:

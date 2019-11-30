@@ -38,8 +38,8 @@ class Grenade:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.size / 2, self.y + self.size / 2 + self.throw_y, \
-               self.x + self.size / 2, self.y - self.size / 2 + self.throw_y
+        return self.x - self.size / 2, self.y - self.size / 2 + self.throw_y, \
+               self.x + self.size / 2, self.y + self.size / 2 + self.throw_y
 
     def hit_target(self):
         Grenade.max_grenade -= 1

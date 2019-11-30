@@ -90,16 +90,9 @@ def update():
             player.falling()
 
 
-def draw():
-    clear_canvas()
-    for game_object in game_world.all_objects():
-        game_object.draw()
-    update_canvas()
-
-
 def collide(a, b):
-    left_a, top_a, right_a, bot_a = a.get_bb()
-    left_b, top_b, right_b, bot_b = b.get_bb()
+    left_a, bot_a, right_a, top_a = a.get_bb()
+    left_b, bot_b, right_b, top_b = b.get_bb()
 
     if left_a > right_b: return False
     if right_a < left_b: return False
@@ -107,3 +100,13 @@ def collide(a, b):
     if bot_a > top_b: return False
 
     return True
+
+
+def draw():
+    clear_canvas()
+    for game_object in game_world.all_objects():
+        game_object.draw()
+    update_canvas()
+
+
+

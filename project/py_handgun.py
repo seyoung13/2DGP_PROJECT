@@ -42,8 +42,8 @@ class Handgun:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.size / 2, self.y + self.size / 2, \
-               self.x + self.size / 2, self.y - self.size / 2
+        return self.x - self.size / 2, self.y - self.size / 2, \
+               self.x + self.size / 2, self.y + self.size / 2
 
     def hit_target(self):
         Handgun.max_pistol -= 1

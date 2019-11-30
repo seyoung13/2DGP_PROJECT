@@ -17,8 +17,6 @@ class Ground:
         pass
 
     def get_bb(self):
-        return self.x - self.w/2, self.y + self.h/2,\
-               self.x + self.w/2, self.y - self.h/2
+        return self.x - self.w/2, self.y - self.h/2,\
+               self.x + self.w/2, self.y + self.h/2
 
-    def get_height(self):
-        return self.y + self.h/2

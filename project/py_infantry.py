@@ -46,8 +46,8 @@ class Infantry:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.w / 2, self.y + self.h / 2, \
-               self.x + self.w / 2, self.y - self.h / 2
+        return self.x - self.w / 2, self.y - self.h / 2, \
+               self.x + self.w / 2, self.y + self.h / 2
 
     def damaged(self, damage):
         self.hp -= damage
