@@ -7,13 +7,13 @@ from pico2d import *
 import game_framework
 import game_world
 
-from file_map import Map
-from file_player import Player
-from file_handgun import Handgun
-from file_heavymachinegun import HeavyMachineGun
-from file_grenade import Grenade
-from file_infantry import Infantry
-from file_spawn import Spawn
+from py_map import Map
+from py_player import Player
+from py_handgun import Handgun
+from py_heavymachinegun import HeavyMachineGun
+from py_grenade import Grenade
+from py_infantry import Infantry
+import py_spawn
 
 name = "MainState"
 
@@ -24,19 +24,17 @@ heavy_machine_gun = None
 grenade = None
 infantry = None
 font = None
-spawn = None
 
 
 def enter():
-    global player, foothold1, foothold2, handgun, infantry, grenade, heavy_machine_gun, spawn
+    global player, foothold1, foothold2, handgun, infantry, grenade, heavy_machine_gun
     foothold1 = Map(300, 30, 600, 60)
     foothold2 = Map(900, 90, 600, 60)
     player = Player()
     handgun = Handgun()
     heavy_machine_gun = HeavyMachineGun()
     grenade = Grenade()
-    infantry = Infantry()
-    spawn = Spawn()
+    infantry = py_spawn.deploy_infantry()
 
     game_world.add_object(foothold1, 0)
     game_world.add_object(foothold2, 0)
@@ -44,8 +42,6 @@ def enter():
     game_world.add_object(handgun, 1)
     game_world.add_object(heavy_machine_gun, 1)
     game_world.add_object(grenade, 1)
-    game_world.add_object(infantry, 1)
-    game_world.add_object(spawn, 0)
 
 
 def exit():
@@ -83,10 +79,15 @@ def update():
     if collide(grenade, infantry):
         infantry.damaged(5)
         grenade.hit_target()
-    if collide(player, foothold1) and Player.descending == 1:
-        player.landing()
-    elif collide(player, foothold2) and Player.descending == 1:
-        player.landing()
+    if Player.descending:
+        if collide(player, foothold1):
+            player.landing()
+        elif collide(player, foothold2):
+            player.landing()
+
+    if not Player.descending and not player.jumping:
+        if not collide(player, foothold1) and not collide(player, foothold2):
+            player.falling()
 
 
 def draw():

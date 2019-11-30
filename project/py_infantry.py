@@ -43,10 +43,11 @@ class Infantry:
             self.image.clip_draw(0, 100 * 2, 100, 100, self.x, self.y)
         else:
             self.image_hit.clip_draw(0, 100 * 2, 100, 100, self.x, self.y)
+        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.w / 2, self.y + self.w / 2, \
-               self.x + self.h / 2, self.y - self.h / 2
+        return self.x - self.w / 2, self.y + self.h / 2, \
+               self.x + self.w / 2, self.y - self.h / 2
 
     def damaged(self, damage):
         self.hp -= damage

@@ -11,6 +11,14 @@ class Ground:
 
     def draw(self):
         self.image.draw(self.x, self.y, self.w, self.h)
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         pass
+
+    def get_bb(self):
+        return self.x - self.w/2, self.y + self.h/2,\
+               self.x + self.w/2, self.y - self.h/2
+
+    def get_height(self):
+        return self.y + self.h/2

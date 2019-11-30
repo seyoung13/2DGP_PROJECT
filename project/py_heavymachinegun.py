@@ -50,10 +50,11 @@ class HeavyMachineGun:
             elif self.direction > 0:
                 self.right_bullet.clip_composite_draw(0, 0, 100, 100, self.muzzle_angle, 'w',
                                                       self.x, self.y, self.w, self.h)
+            draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.w / 2, self.y + self.w / 2, \
-               self.x + self.h / 2, self.y - self.h / 2
+        return self.x - self.w / 2, self.y + self.h / 2, \
+               self.x + self.w / 2, self.y - self.h / 2
 
     def hit_target(self):
         game_world.remove_object(self)

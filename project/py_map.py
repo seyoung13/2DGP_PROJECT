@@ -1,7 +1,7 @@
 from pico2d import *
 import game_world
-from file_ground import Ground
-from file_background import Background
+from py_ground import Ground
+from py_background import Background
 
 
 class Map:

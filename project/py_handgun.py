@@ -39,6 +39,7 @@ class Handgun:
 
     def draw(self):
         self.image.clip_draw(0, 0, 60, 60, self.x, self.y, self.size, self.size)
+        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - self.size / 2, self.y + self.size / 2, \
