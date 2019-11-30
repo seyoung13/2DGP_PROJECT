@@ -13,11 +13,13 @@ class Infantry:
         self.hp = hp
         self.sick = 0
         self.face_direction = 1
+        self.timer = 200
+        os.chdir('image')
         if Infantry.image is None:
             Infantry.image = load_image('animation_sheet.png')
         if Infantry.image_hit is None:
             Infantry.image_hit = load_image('animation_sheet_hit.png')
-        self.timer = 200
+        os.chdir('..\\')
 
     def update(self):
         # 이동

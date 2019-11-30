@@ -14,8 +14,10 @@ class Grenade:
         self.direction = direction
         self.velocity = velcocity
         self.hit = 0
+        os.chdir('image')
         if Grenade.image is None:
             Grenade.image = load_image('grenade.png')
+        os.chdir('..\\')
 
     def update(self):
         # 이동
