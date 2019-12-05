@@ -19,6 +19,7 @@ class HeavyMachineGun:
     def __init__(self, x=0, y=0, direction=-1, delay=0, muzzle_angle=0):
         self.x, self.y = x, y
         self.w, self.h = 120, 20
+        self.cx, self.cy = 0, 0
         self.direction = direction
         self.hit = 0
         self.delay = delay
@@ -41,23 +42,28 @@ class HeavyMachineGun:
             self.y += MUZZLE_VELOCITY_PPS * game_framework.frame_time * sin(self.muzzle_angle)
 
         # 화면 밖으로 넘어감
-        if self.x < 0 or self.x > 1200 or self.y < 0 or self.y > 800:
+        if self.x < self.bg.window_left or self.x > self.bg.window_left + 1200 or \
+                self.y < self.bg.window_bot or self.y > self.bg.window_bot + 800:
             game_world.remove_object(self)
         # 적을 맞힘
 
     def draw(self):
+        self.cx, self.cy = self.x - self.bg.window_left, self.y - self.bg.window_bot
         if self.delay == 0:
             if self.direction < 0:
                 self.left_bullet.clip_composite_draw(0, 0, 100, 100, -self.muzzle_angle, 'w',
-                                                     self.x, self.y, self.w, self.h)
+                                                     self.cx, self.cy, self.w, self.h)
             elif self.direction > 0:
                 self.right_bullet.clip_composite_draw(0, 0, 100, 100, self.muzzle_angle, 'w',
-                                                      self.x, self.y, self.w, self.h)
+                                                      self.cx, self.cy, self.w, self.h)
             draw_rectangle(*self.get_bb())
 
+    def set_background(self, bg):
+        self.bg = bg
+
     def get_bb(self):
-        return self.x - self.w / 2, self.y - self.h / 2, \
-               self.x + self.w / 2, self.y + self.h / 2
+        return self.cx - self.w / 2, self.cy - self.h / 2, \
+               self.cx + self.w / 2, self.cy + self.h / 2
 
     def hit_target(self):
         game_world.remove_object(self)

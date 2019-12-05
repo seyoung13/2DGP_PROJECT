@@ -69,11 +69,11 @@ class IdleState:
         elif event == LEFT_KEY_UP:
             player.velocity += RUN_SPEED_PPS
         elif event == UP_KEY_DOWN:
-            player.look_at = TOP_SIDE
+            player.looking = TOP_SIDE
         elif event == UP_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
         elif event == DOWN_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
 
     @staticmethod
     def exit(player, event):
@@ -91,19 +91,21 @@ class IdleState:
         if event == W_KEY_DOWN:
             player.weapon = LASER
         if event == DOWN_KEY_DOWN and player.jumping:
-            player.look_at = BOTTOM_SIDE
+            player.looking = BOTTOM_SIDE
 
     @staticmethod
     def do(player):
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        player.x = clamp(0, player.x, player.bg.w)
+        player.y = clamp(0, player.y, player.bg.h)
         player.sit_y = 0
 
     @staticmethod
     def draw(player):
         if player.direction > 0:
-            player.image.clip_draw(0, 300, 100, 100, player.x, player.y)
+            player.image.clip_draw(0, 300, 100, 100, player.cx, player.cy)
         elif player.direction < 0:
-            player.image.clip_draw(0, 200, 100, 100, player.x, player.y)
+            player.image.clip_draw(0, 200, 100, 100, player.cx, player.cy)
 
 
 class RunState:
@@ -120,11 +122,11 @@ class RunState:
         elif event == LEFT_KEY_UP:
             player.velocity += RUN_SPEED_PPS
         elif event == UP_KEY_DOWN:
-            player.look_at = TOP_SIDE
+            player.looking = TOP_SIDE
         elif event == UP_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
         elif event == DOWN_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
 
     @staticmethod
     def exit(player, event):
@@ -142,22 +144,22 @@ class RunState:
         if event == W_KEY_DOWN:
             player.weapon = LASER
         if event == DOWN_KEY_DOWN and player.jumping:
-            player.look_at = BOTTOM_SIDE
+            player.looking = BOTTOM_SIDE
 
     @staticmethod
     def do(player):
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         player.x += player.velocity * game_framework.frame_time
-        player.x = clamp(25, player.x, 1200 - 25)
-
+        player.x = clamp(0, player.x, player.bg.w)
+        player.y = clamp(0, player.y, player.bg.h)
         player.sit_y = 0
 
     @staticmethod
     def draw(player):
         if player.direction > 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 100, player.x, player.y)
+            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 100, player.cx, player.cy)
         elif player.direction < 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 100, player.x, player.y)
+            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 100, player.cx, player.cy)
 
 
 class SitState:
@@ -174,7 +176,7 @@ class SitState:
         elif event == LEFT_KEY_UP:
             player.velocity += RUN_SPEED_PPS
         elif event == DOWN_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
 
     @staticmethod
     def exit(player, event):
@@ -194,6 +196,8 @@ class SitState:
 
     @staticmethod
     def do(player):
+        player.x = clamp(0, player.x, player.bg.w)
+        player.y = clamp(0, player.y, player.bg.h)
         if not player.jumping:
             player.sit_y = -30
             player.muzzle_angle = 0.0
@@ -203,11 +207,11 @@ class SitState:
     @staticmethod
     def draw(player):
         if player.jumping:
-            player.image.clip_draw(0, 100 * 1, 50, 100, player.x, player.y + player.sit_y)
+            player.image.clip_draw(0, 100 * 1, 50, 100, player.cx, player.cy + player.sit_y)
         elif player.direction > 0:
-            player.image.clip_draw(0, 100, 100, 50, player.x, player.y + player.sit_y)
+            player.image.clip_draw(0, 100, 100, 50, player.cx, player.cy + player.sit_y)
         elif player.direction < 0:
-            player.image.clip_draw(0, 100, 100, 50, player.x, player.y + player.sit_y)
+            player.image.clip_draw(0, 100, 100, 50, player.cx, player.cy + player.sit_y)
 
 
 class CrawlState:
@@ -243,12 +247,13 @@ class CrawlState:
     @staticmethod
     def do(player):
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        player.x = clamp(0, player.x, player.bg.w)
+        player.y = clamp(0, player.y, player.bg.h)
 
-        player.x = clamp(25, player.x, 1200 - 25)
         if not player.jumping:
             player.sit_y = -30
             player.x += 0.5 * player.velocity * game_framework.frame_time
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
         else:
             player.sit_y = 0
             player.x += player.velocity * game_framework.frame_time
@@ -256,13 +261,13 @@ class CrawlState:
     @staticmethod
     def draw(player):
         if player.jumping:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 50, 100, player.x, player.y +
+            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 50, 100, player.cx, player.cy +
                                    player.sit_y)
         elif player.direction > 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 50, player.x, player.y +
+            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 50, player.cx, player.cy +
                                    player.sit_y)
         elif player.direction < 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 50, player.x, player.y +
+            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 50,player.cx, player.cy +
                                    player.sit_y)
 
 
@@ -302,15 +307,18 @@ class Player:
     descending = True
 
     def __init__(self):
-        self.x, self.y = 200, 500
+        self.x, self.y = 100, 500
         self.w, self.h = 30, 80
+        self.cx, self.cy = 0, 0
         self.frame = 0
         self.direction = 1
         self.velocity = 0
+        self.bg = 0
+        self.canvas_width, self.canvas_height = get_canvas_width(), get_canvas_height()
         self.jumping, self.jump_y, self.before_jump_y, self.sit_y = True, 0, 0, 0
         self.weapon = PISTOL
         self.shoot_delay = 0
-        self.look_at = FRONT_SIDE
+        self.looking = FRONT_SIDE
         self.muzzle_angle = 0.0
 
         self.event_que = []
@@ -340,6 +348,8 @@ class Player:
             self.cur_state = next_state_table[self.cur_state][event]
             self.cur_state.enter(self, event)
 
+        self.cx, self.cy = self.x - self.bg.window_left, self.y - self.bg.window_bot
+
         # 점프
         if not self.jumping:
             self.before_jump_y = self.y
@@ -350,13 +360,13 @@ class Player:
         if self.jumping and Player.descending:
             self.y -= JUMP_SPEED_PPS * game_framework.frame_time
         # 총구 방향
-        if self.look_at == TOP_SIDE:
+        if self.looking == TOP_SIDE:
             if self.muzzle_angle < pi / 2:
                 self.muzzle_angle += pi / 32
-        if self.look_at == BOTTOM_SIDE:
+        if self.looking == BOTTOM_SIDE:
             if self.muzzle_angle > -pi / 2:
                 self.muzzle_angle -= pi / 32
-        if self.look_at == FRONT_SIDE:
+        if self.looking == FRONT_SIDE:
             if self.muzzle_angle == 0:
                 self.muzzle_angle = 0
             elif self.muzzle_angle > 0:
@@ -371,21 +381,28 @@ class Player:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.w / 2, self.y - self.h / 2, \
-               self.x + self.w / 2, self.y + self.h / 2 + self.sit_y * 1.5
+        return self.cx - self.w / 2, self.cy - self.h / 2, \
+               self.cx + self.w / 2, self.cy + self.h / 2 + self.sit_y * 1.5
+
+    def set_background(self, bg):
+        self.bg = bg
+        self.x = self.bg.w / 2
+        self.y = self.bg.h / 2
 
     def shoot(self):
         if self.weapon == PISTOL:
             if Handgun.max_pistol < 4:
                 bullet = Handgun(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction, self.muzzle_angle)
                 game_world.add_object(bullet, 1)
+                bullet.set_background(self.bg)
                 Handgun.max_pistol += 1
         elif self.weapon == MACHINE_GUN and self.shoot_delay < 0:
-            bullet = [HeavyMachineGun(self.x + random.randint(-15, 15) * sin(self.muzzle_angle),
+            bullet = [HeavyMachineGun(self.x + random.randint(-15, 15) * sin(self.muzzle_angle) + self.direction * 15,
                                       self.y + self.jump_y + random.randint(-15, 15) * cos(self.muzzle_angle)
                                       + 10 + self.sit_y, self.direction, i*20, self.muzzle_angle) for i in range(4)]
             for i in range(4):
                 game_world.add_object(bullet[i], 1)
+                bullet[i].set_background(self.bg)
             self.shoot_delay = 55
         elif self.weapon == LASER:
             bullet = LaserGun(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction, self.muzzle_angle)
@@ -395,6 +412,7 @@ class Player:
         if Grenade.max_grenade < 2:
             grenade = Grenade(self.x, self.y + self.jump_y, self.direction, self.velocity)
             game_world.add_object(grenade, 1)
+            grenade.set_background(self.bg)
             Grenade.max_grenade += 1
 
     def landing(self):

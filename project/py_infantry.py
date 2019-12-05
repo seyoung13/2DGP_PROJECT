@@ -10,6 +10,7 @@ class Infantry:
     def __init__(self, x=0, y=0, hp=0):
         self.x, self.y = x, y
         self.w, self.h = 20, 100
+        self.cx, self.cy = 0, 0
         self.hp = hp
         self.sick = 0
         self.face_direction = 1
@@ -41,16 +42,20 @@ class Infantry:
         self.x = clamp(25, self.x, 1200 - 25)
 
     def draw(self):
+        self.cx, self.cy = self.x - self.bg.window_left, self.y - self.bg.window_bot
         if self.sick == 0:
-            self.image.clip_draw(0, 100 * 2, 100, 100, self.x, self.y)
+            self.image.clip_draw(0, 100 * 2, 100, 100, self.cx, self.cy)
         else:
-            self.image_hit.clip_draw(0, 100 * 2, 100, 100, self.x, self.y)
+            self.image_hit.clip_draw(0, 100 * 2, 100, 100, self.cx, self.cy)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.w / 2, self.y - self.h / 2, \
-               self.x + self.w / 2, self.y + self.h / 2
+        return self.cx - self.w / 2, self.cy - self.h / 2, \
+               self.cx + self.w / 2, self.cy + self.h / 2
 
     def damaged(self, damage):
         self.hp -= damage
         self.sick = 1
+
+    def set_background(self, bg):
+        self.bg = bg

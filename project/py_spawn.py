@@ -3,15 +3,17 @@ import game_world
 import random
 import py_player
 from py_infantry import Infantry
-
+from py_background import Background
 
 infantry = None
 
+#bg = Background()
 
 def deploy_infantry():
-    global infantry
+    global infantry, bg
     infantry = Infantry(random.randint(100, 1000), random.randint(80, 120), 5)
     game_world.add_object(infantry, 1)
+    #infantry.set_background(bg)
     return infantry
 
 
@@ -21,4 +23,3 @@ def draw():
 
 def update():
     pass
-

@@ -12,13 +12,16 @@ class Ground:
         os.chdir('..\\')
 
     def draw(self):
-        self.image.draw(self.x, self.y, self.w, self.h)
+        self.cx, self.cy = self.x - self.bg.window_left, self.y - self.bg.window_bot
+        self.image.draw(self.cx, self.cy, self.w, self.h)
         draw_rectangle(*self.get_bb())
 
     def update(self):
         pass
 
     def get_bb(self):
-        return self.x - self.w/2, self.y - self.h/2,\
-               self.x + self.w/2, self.y + self.h/2
+        return self.cx - self.w/2, self.cy - self.h/2,\
+               self.cx + self.w/2, self.cy + self.h/2
 
+    def set_background(self, bg):
+        self.bg = bg
