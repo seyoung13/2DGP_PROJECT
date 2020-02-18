@@ -68,11 +68,11 @@ class IdleState:
         elif event == LEFT_KEY_UP:
             player.velocity += RUN_SPEED_PPS
         elif event == UP_KEY_DOWN:
-            player.look_at = TOP_SIDE
+            player.looking = TOP_SIDE
         elif event == UP_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
         elif event == DOWN_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
 
     @staticmethod
     def exit(player, event):
@@ -90,7 +90,7 @@ class IdleState:
         if event == W_KEY_DOWN:
             player.weapon = LASER
         if event == DOWN_KEY_DOWN and player.jumping:
-            player.look_at = BOTTOM_SIDE
+            player.looking = BOTTOM_SIDE
 
     @staticmethod
     def do(player):
@@ -119,11 +119,11 @@ class RunState:
         elif event == LEFT_KEY_UP:
             player.velocity += RUN_SPEED_PPS
         elif event == UP_KEY_DOWN:
-            player.look_at = TOP_SIDE
+            player.looking = TOP_SIDE
         elif event == UP_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
         elif event == DOWN_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
 
     @staticmethod
     def exit(player, event):
@@ -141,7 +141,7 @@ class RunState:
         if event == W_KEY_DOWN:
             player.weapon = LASER
         if event == DOWN_KEY_DOWN and player.jumping:
-            player.look_at = BOTTOM_SIDE
+            player.looking = BOTTOM_SIDE
 
     @staticmethod
     def do(player):
@@ -173,7 +173,7 @@ class SitState:
         elif event == LEFT_KEY_UP:
             player.velocity += RUN_SPEED_PPS
         elif event == DOWN_KEY_UP:
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
 
     @staticmethod
     def exit(player, event):
@@ -247,7 +247,7 @@ class CrawlState:
         if not player.jumping:
             player.sit_y = -30
             player.x += 0.5 * player.velocity * game_framework.frame_time
-            player.look_at = FRONT_SIDE
+            player.looking = FRONT_SIDE
         else:
             player.sit_y = 0
             player.x += player.velocity * game_framework.frame_time
@@ -309,7 +309,7 @@ class Player:
         self.jumping, self.jump_y, self.before_jump_y, self.sit_y = True, 0, 0, 0
         self.weapon = PISTOL
         self.shoot_delay = 0
-        self.look_at = FRONT_SIDE
+        self.looking = FRONT_SIDE
         self.muzzle_angle = 0.0
 
         self.event_que = []
@@ -344,13 +344,13 @@ class Player:
         if self.jumping and Player.descending:
             self.y -= JUMP_SPEED_PPS * game_framework.frame_time
         # 총구 방향
-        if self.look_at == TOP_SIDE:
+        if self.looking == TOP_SIDE:
             if self.muzzle_angle < pi / 2:
                 self.muzzle_angle += pi / 32
-        if self.look_at == BOTTOM_SIDE:
+        if self.looking == BOTTOM_SIDE:
             if self.muzzle_angle > -pi / 2:
                 self.muzzle_angle -= pi / 32
-        if self.look_at == FRONT_SIDE:
+        if self.looking == FRONT_SIDE:
             if self.muzzle_angle == 0:
                 self.muzzle_angle = 0
             elif self.muzzle_angle > 0:
@@ -376,10 +376,10 @@ class Player:
                 Handgun.max_pistol += 1
         elif self.weapon == MACHINE_GUN and self.shoot_delay < 0:
             bullet = [HeavyMachineGun(self.x, self.y + self.jump_y + random.randint(-10, 10) + 10 +
-                                      self.sit_y, self.direction, i*15, self.muzzle_angle) for i in range(4)]
+                                      self.sit_y, self.direction, i*20, self.muzzle_angle) for i in range(4)]
             for i in range(4):
                 game_world.add_object(bullet[i], 1)
-            self.shoot_delay = 50
+            self.shoot_delay = 60
         elif self.weapon == LASER:
             bullet = Laser(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction, self.muzzle_angle)
             game_world.add_object(bullet, 1)
