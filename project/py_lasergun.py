@@ -34,6 +34,3 @@ class LaserGun:
 
     def draw(self):
         self.image.clip_draw(self.x+(self.direction*300), self.frame_y*60, 60, 60, self.x, self.y, 1200, 20)
-
-    def set_background(self, bg):
-        self.bg = bg

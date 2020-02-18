@@ -12,14 +12,12 @@ from py_player import Player
 from py_handgun import Handgun
 from py_heavymachinegun import HeavyMachineGun
 from py_grenade import Grenade
-from py_background import Background
 from py_infantry import Infantry
 import py_spawn
 
 name = "MainState"
 
-foothold1, foothold2, foothold3 = None, None, None
-background = None
+foothold1, foothold2 = None, None
 player = None
 handgun = None
 heavy_machine_gun = None
@@ -29,36 +27,22 @@ font = None
 
 
 def enter():
-    global player,  handgun, infantry, grenade, heavy_machine_gun, background
-    global foothold1, foothold2, foothold3
+    global player, foothold1, foothold2, handgun, infantry, grenade, heavy_machine_gun
     foothold1 = Map(300, 30, 600, 60)
     foothold2 = Map(900, 90, 600, 60)
-    foothold3 = Map(2000, 30, 1600, 60)
     player = Player()
     handgun = Handgun()
     heavy_machine_gun = HeavyMachineGun()
     grenade = Grenade()
     infantry = py_spawn.deploy_infantry()
-    background = Background()
 
-    game_world.add_object(background, 0)
     game_world.add_object(foothold1, 0)
     game_world.add_object(foothold2, 0)
-    game_world.add_object(foothold3, 0)
     game_world.add_object(player, 1)
     game_world.add_object(handgun, 1)
     game_world.add_object(heavy_machine_gun, 1)
     game_world.add_object(grenade, 1)
 
-    background.set_center_obj(player)
-    player.set_background(background)
-    foothold1.set_background(background)
-    foothold2.set_background(background)
-    foothold3.set_background(background)
-    handgun.set_background(background)
-    heavy_machine_gun.set_background(background)
-    grenade.set_background(background)
-    infantry.set_background(background)
 
 def exit():
     game_world.clear()
@@ -95,16 +79,14 @@ def update():
     if collide(grenade, infantry):
         infantry.damaged(5)
         grenade.hit_target()
-
     if Player.descending:
         if collide(player, foothold1):
             player.landing()
         elif collide(player, foothold2):
             player.landing()
-        elif collide(player, foothold3):
-            player.landing()
+
     if not Player.descending and not player.jumping:
-        if not collide(player, foothold1) and not collide(player, foothold2) and not collide(player, foothold3):
+        if not collide(player, foothold1) and not collide(player, foothold2):
             player.falling()
 
 
