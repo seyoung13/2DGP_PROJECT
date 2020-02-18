@@ -10,7 +10,7 @@ from py_handgun import Handgun
 from py_heavymachinegun import HeavyMachineGun
 from py_lasergun import LaserGun
 from py_grenade import Grenade
-import py_map_grassland
+import py_map
 
 # Boy Event
 # enum 이랑 비슷 0, 1, 2, 3
@@ -386,6 +386,8 @@ class Player:
 
     def set_background(self, bg):
         self.bg = bg
+        self.x = self.bg.w / 2
+        self.y = self.bg.h / 2
 
     def shoot(self):
         if self.weapon == PISTOL:
