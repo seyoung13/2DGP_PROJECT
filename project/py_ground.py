@@ -1,5 +1,4 @@
 from pico2d import *
-import os
 
 
 class Ground:
@@ -7,9 +6,8 @@ class Ground:
     def __init__(self, x, y, w, h):
         self.x, self.y = x, y
         self.w, self.h = w, h
-        os.chdir('image')
+
         self.image = load_image('grass.png')
-        os.chdir('..\\')
 
     def draw(self):
         self.image.draw(self.x, self.y, self.w, self.h)

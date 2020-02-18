@@ -22,10 +22,8 @@ class Handgun:
         self.hit = 0
         self.muzzle_angle = muzzle_angle
         self.size = 20
-        os.chdir('image')
         if Handgun.image is None:
             Handgun.image = load_image('pistol_bullet.png')
-        os.chdir('..\\')
 
     def update(self):
         # 이동
