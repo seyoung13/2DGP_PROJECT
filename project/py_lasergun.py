@@ -1,9 +1,10 @@
 from pico2d import *
 import game_world
 import main_state
+import os
 
 
-class Laser:
+class LaserGun:
     image = None
 
     def __init__(self, x=0, y=0, direction=-1, is_above=0):
@@ -13,8 +14,10 @@ class Laser:
         self.hit = 0
         self.is_above = is_above
         self.timer = 50
-        if Laser.image is None:
-            Laser.image = load_image('laser.png')
+        os.chdir('image')
+        if LaserGun.image is None:
+            LaserGun.image = load_image('laser.png')
+        os.chdir('..\\')
 
     def update(self):
         # 이동

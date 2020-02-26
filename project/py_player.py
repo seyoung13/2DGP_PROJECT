@@ -4,10 +4,11 @@ import main_state
 import game_framework
 import random
 from math import *
+import os
 
 from py_handgun import Handgun
 from py_heavymachinegun import HeavyMachineGun
-from py_laser import Laser
+from py_lasergun import LaserGun
 from py_grenade import Grenade
 import py_map
 
@@ -297,12 +298,12 @@ next_state_table = {
 
 
 class Player:
+    image = None
     descending = True
 
     def __init__(self):
         self.x, self.y = 200, 500
-        self.w, self.h = 30, 100
-        self.image = load_image('animation_sheet.png')
+        self.w, self.h = 30, 80
         self.frame = 0
         self.direction = 1
         self.velocity = 0
@@ -315,6 +316,11 @@ class Player:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+
+        os.chdir('image')
+        if Player.image is None:
+            Player.image = load_image('animation_sheet.png')
+        os.chdir('..\\')
 
     def update_state(self):
         if len(self.event_que) > 0:
@@ -375,13 +381,22 @@ class Player:
                 game_world.add_object(bullet, 1)
                 Handgun.max_pistol += 1
         elif self.weapon == MACHINE_GUN and self.shoot_delay < 0:
+<<<<<<< HEAD
             bullet = [HeavyMachineGun(self.x, self.y + self.jump_y + random.randint(-10, 10) + 10 +
                                       self.sit_y, self.direction, i*20, self.muzzle_angle) for i in range(4)]
             for i in range(4):
                 game_world.add_object(bullet[i], 1)
             self.shoot_delay = 60
+=======
+            bullet = [HeavyMachineGun(self.x + random.randint(-15, 15) * sin(self.muzzle_angle),
+                                      self.y + self.jump_y + random.randint(-15, 15) * cos(self.muzzle_angle)
+                                      + 10 + self.sit_y, self.direction, i*20, self.muzzle_angle) for i in range(4)]
+            for i in range(4):
+                game_world.add_object(bullet[i], 1)
+            self.shoot_delay = 55
+>>>>>>> parent of e9bc623... Revert "이미지 디렉토리 수정"
         elif self.weapon == LASER:
-            bullet = Laser(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction, self.muzzle_angle)
+            bullet = LaserGun(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction, self.muzzle_angle)
             game_world.add_object(bullet, 1)
 
     def throw(self):

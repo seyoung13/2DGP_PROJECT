@@ -3,9 +3,10 @@ import game_world
 import main_state
 import game_framework
 from math import *
+import os
 
 PIXEL_PER_METER = (10.0 / 0.3)
-MUZZLE_VELOCITY_KMPH = 200.0  # Km / Hour
+MUZZLE_VELOCITY_KMPH = 150.0  # Km / Hour
 MUZZLE_VELOCITY_MPM = (MUZZLE_VELOCITY_KMPH * 1000.0 / 60.0)
 MUZZLE_VELOCITY_MPS = (MUZZLE_VELOCITY_MPM / 60.0)
 MUZZLE_VELOCITY_PPS = (MUZZLE_VELOCITY_MPS * PIXEL_PER_METER)
@@ -17,16 +18,18 @@ class HeavyMachineGun:
 
     def __init__(self, x=0, y=0, direction=-1, delay=0, muzzle_angle=0):
         self.x, self.y = x, y
-        self.w, self.h = 100, 45
+        self.w, self.h = 120, 20
         self.direction = direction
         self.hit = 0
         self.delay = delay
         self.muzzle_angle = muzzle_angle
 
+        os.chdir('image')
         if HeavyMachineGun.left_bullet is None:
             HeavyMachineGun.left_bullet = load_image('machine_gun_bullet_left.png')
         if HeavyMachineGun.right_bullet is None:
             HeavyMachineGun.right_bullet = load_image('machine_gun_bullet_right.png')
+        os.chdir('..\\')
 
     def update(self):
         # 이동
