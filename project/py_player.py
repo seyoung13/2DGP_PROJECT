@@ -10,7 +10,6 @@ from py_handgun import Handgun
 from py_heavymachinegun import HeavyMachineGun
 from py_lasergun import LaserGun
 from py_grenade import Grenade
-import py_map
 
 # Boy Event
 # enum 이랑 비슷 0, 1, 2, 3
@@ -96,14 +95,20 @@ class IdleState:
     @staticmethod
     def do(player):
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        player.x += player.velocity * game_framework.frame_time
+
+        player.x = clamp(0, player.x, player.bg.w)
+        player.y = clamp(0, player.y, player.bg.h)
+
         player.sit_y = 0
 
     @staticmethod
     def draw(player):
+        cx, cy = player.x - player.bg.window_left, player.y - player.bg.window_bot + player.sit_y
         if player.direction > 0:
-            player.image.clip_draw(0, 300, 100, 100, player.x, player.y)
+            player.image.clip_draw(0, 300, 100, 100, cx, cy)
         elif player.direction < 0:
-            player.image.clip_draw(0, 200, 100, 100, player.x, player.y)
+            player.image.clip_draw(0, 200, 100, 100, cx, cy)
 
 
 class RunState:
@@ -148,16 +153,19 @@ class RunState:
     def do(player):
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         player.x += player.velocity * game_framework.frame_time
-        player.x = clamp(25, player.x, 1200 - 25)
+
+        player.x = clamp(0, player.x, player.bg.w)
+        player.y = clamp(0, player.y, player.bg.h)
 
         player.sit_y = 0
 
     @staticmethod
     def draw(player):
+        cx, cy = player.x - player.bg.window_left, player.y - player.bg.window_bot + player.sit_y
         if player.direction > 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 100, player.x, player.y)
+            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 100, cx, cy)
         elif player.direction < 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 100, player.x, player.y)
+            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 100, cx, cy)
 
 
 class SitState:
@@ -194,6 +202,12 @@ class SitState:
 
     @staticmethod
     def do(player):
+        player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        player.x += player.velocity * game_framework.frame_time
+
+        player.x = clamp(0, player.x, player.bg.w)
+        player.y = clamp(0, player.y, player.bg.h)
+
         if not player.jumping:
             player.sit_y = -30
             player.muzzle_angle = 0.0
@@ -202,12 +216,13 @@ class SitState:
 
     @staticmethod
     def draw(player):
+        cx, cy = player.x - player.bg.window_left, player.y - player.bg.window_bot + player.sit_y
         if player.jumping:
-            player.image.clip_draw(0, 100 * 1, 50, 100, player.x, player.y + player.sit_y)
+            player.image.clip_draw(0, 100 * 1, 50, 100, cx, cy)
         elif player.direction > 0:
-            player.image.clip_draw(0, 100, 100, 50, player.x, player.y + player.sit_y)
+            player.image.clip_draw(0, 100, 100, 50, cx, cy)
         elif player.direction < 0:
-            player.image.clip_draw(0, 100, 100, 50, player.x, player.y + player.sit_y)
+            player.image.clip_draw(0, 100, 100, 50, cx, cy)
 
 
 class CrawlState:
@@ -243,8 +258,11 @@ class CrawlState:
     @staticmethod
     def do(player):
         player.frame = (player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        player.x += player.velocity * game_framework.frame_time
 
-        player.x = clamp(25, player.x, 1200 - 25)
+        player.x = clamp(0, player.x, player.bg.w)
+        player.y = clamp(0, player.y, player.bg.h)
+
         if not player.jumping:
             player.sit_y = -30
             player.x += 0.5 * player.velocity * game_framework.frame_time
@@ -255,15 +273,13 @@ class CrawlState:
 
     @staticmethod
     def draw(player):
+        cx, cy = player.x - player.bg.window_left, player.y - player.bg.window_bot + player.sit_y
         if player.jumping:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 50, 100, player.x, player.y +
-                                   player.sit_y)
+            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 50, 100, cx, cy)
         elif player.direction > 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 50, player.x, player.y +
-                                   player.sit_y)
+            player.image.clip_draw(int(player.frame) * 100, 100 * 1, 100, 50, cx, cy)
         elif player.direction < 0:
-            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 50, player.x, player.y +
-                                   player.sit_y)
+            player.image.clip_draw(int(player.frame) * 100, 100 * 0, 100, 50, cx, cy)
 
 
 next_state_table = {
@@ -308,6 +324,7 @@ class Player:
         self.direction = 1
         self.velocity = 0
         self.jumping, self.jump_y, self.before_jump_y, self.sit_y = True, 0, 0, 0
+        self.canvas_width, self.canvas_height = 0, 0
         self.weapon = PISTOL
         self.shoot_delay = 0
         self.looking = FRONT_SIDE
@@ -374,6 +391,11 @@ class Player:
         return self.x - self.w / 2, self.y - self.h / 2, \
                self.x + self.w / 2, self.y + self.h / 2 + self.sit_y * 1.5
 
+    def set_background(self, bg):
+        self.bg = bg
+        self.x = self.bg.w / 2
+        self.y = self.bg.h / 2
+
     def shoot(self):
         if self.weapon == PISTOL:
             if Handgun.max_pistol < 4:
@@ -381,20 +403,17 @@ class Player:
                 game_world.add_object(bullet, 1)
                 Handgun.max_pistol += 1
         elif self.weapon == MACHINE_GUN and self.shoot_delay < 0:
-<<<<<<< HEAD
             bullet = [HeavyMachineGun(self.x, self.y + self.jump_y + random.randint(-10, 10) + 10 +
                                       self.sit_y, self.direction, i*20, self.muzzle_angle) for i in range(4)]
             for i in range(4):
                 game_world.add_object(bullet[i], 1)
             self.shoot_delay = 60
-=======
             bullet = [HeavyMachineGun(self.x + random.randint(-15, 15) * sin(self.muzzle_angle),
                                       self.y + self.jump_y + random.randint(-15, 15) * cos(self.muzzle_angle)
                                       + 10 + self.sit_y, self.direction, i*20, self.muzzle_angle) for i in range(4)]
             for i in range(4):
                 game_world.add_object(bullet[i], 1)
             self.shoot_delay = 55
->>>>>>> parent of e9bc623... Revert "이미지 디렉토리 수정"
         elif self.weapon == LASER:
             bullet = LaserGun(self.x, self.y + self.jump_y + self.sit_y + 10, self.direction, self.muzzle_angle)
             game_world.add_object(bullet, 1)
